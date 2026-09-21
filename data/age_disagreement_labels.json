@@ -1,0 +1,360 @@
+{
+ "what": "Hand labels for a seeded sample of trials where the structured minimumAge field and an age floor parsed out of the eligibility prose disagree.",
+ "who": "Labelled by the repository author by reading the criteria text around each match. These are judgements, not registry data, and they are recorded here so the claim in the README can be checked rather than taken on trust.",
+ "how": "sample = random.Random(7).sample(disagreements, 40), plus the first 12 disagreements in corpus order and 6 seen while categorising. Duplicates removed.",
+ "labels": {
+  "real": "The prose states the trial's own minimum age and it genuinely differs from minimumAge.",
+  "cohort_disjunction": "One of several alternative routes into the trial ('Age >=70, or 60-69 if ineligible for X'; 'Cohort C: Age >=18').",
+  "about_another_person": "The age belongs to a parent, guardian, caregiver, donor or study facilitator, not the subject.",
+  "sub_condition": "The age gates some other criterion: which performance scale to use, how menopause is defined, a lab cutoff, when assent is needed, a risk-factor list.",
+  "exclusion": "The age appears in the exclusion criteria.",
+  "range_tail": "The pattern matched the upper bound of a written range ('aged 18 to 75 years or older')."
+ },
+ "counts": {
+  "about_another_person": 7,
+  "cohort_disjunction": 12,
+  "exclusion": 2,
+  "range_tail": 1,
+  "real": 5,
+  "sub_condition": 21,
+  "total": 48
+ },
+ "annotations": [
+  {
+   "nct_id": "NCT07072247",
+   "structured": 16.0,
+   "prose": 18,
+   "label": "real",
+   "note": "'patients aged 18 years or older on the day of informed consent signing', plain inclusion; minimumAge says 16."
+  },
+  {
+   "nct_id": "NCT06247397",
+   "structured": 18.0,
+   "prose": 40,
+   "label": "real",
+   "note": "'Inclusion Criteria: Age 40 years or older', unqualified; minimumAge says 18."
+  },
+  {
+   "nct_id": "NCT07370532",
+   "structured": 50.0,
+   "prose": 18,
+   "label": "real",
+   "note": "'Inclusion Criteria: Age >= 18 years', unqualified; minimumAge says 50."
+  },
+  {
+   "nct_id": "NCT07236814",
+   "structured": 12.0,
+   "prose": 2,
+   "label": "real",
+   "note": "'Age >= 2 years' as a bare bullet; minimumAge says 12."
+  },
+  {
+   "nct_id": "NCT07246668",
+   "structured": 20.0,
+   "prose": 18,
+   "label": "real",
+   "note": "'Inclusion Criteria: Age >= 18 years'; minimumAge says 20."
+  },
+  {
+   "nct_id": "NCT04248569",
+   "structured": 12.0,
+   "prose": 18,
+   "label": "cohort_disjunction",
+   "note": "'Cohort C: Patients must be Age >= 18'."
+  },
+  {
+   "nct_id": "NCT05970497",
+   "structured": 18.0,
+   "prose": 12,
+   "label": "cohort_disjunction",
+   "note": "'Cohort 5 only: Age 12 years or older'."
+  },
+  {
+   "nct_id": "NCT05688982",
+   "structured": 1.0,
+   "prose": 18,
+   "label": "cohort_disjunction",
+   "note": "'Adult (age >=18) ED patient or pediatric ED patient'."
+  },
+  {
+   "nct_id": "NCT04332822",
+   "structured": 75.0,
+   "prose": 80,
+   "label": "cohort_disjunction",
+   "note": "'Age >=80 years or frail >=75 years'."
+  },
+  {
+   "nct_id": "NCT05245656",
+   "structured": 60.0,
+   "prose": 70,
+   "label": "cohort_disjunction",
+   "note": "'age >=70 years or 60-69 years if ineligible'."
+  },
+  {
+   "nct_id": "NCT07397832",
+   "structured": 60.0,
+   "prose": 70,
+   "label": "cohort_disjunction",
+   "note": "'aged >=70 years, or patients aged 60-69 with ECOG'."
+  },
+  {
+   "nct_id": "NCT06022159",
+   "structured": 65.0,
+   "prose": 70,
+   "label": "cohort_disjunction",
+   "note": "'aged >= 70 years with performance status ECOG <=2 and/or'."
+  },
+  {
+   "nct_id": "NCT06208735",
+   "structured": 1.0,
+   "prose": 18,
+   "label": "cohort_disjunction",
+   "note": "'Participants in the cohort A must be 18 years of age or older'."
+  },
+  {
+   "nct_id": "NCT06944964",
+   "structured": 18.0,
+   "prose": 60,
+   "label": "cohort_disjunction",
+   "note": "'either: 1. Age >= 60 years or; 2. Age 18-60 years with one or more of'."
+  },
+  {
+   "nct_id": "NCT06985485",
+   "structured": 15.0,
+   "prose": 60,
+   "label": "cohort_disjunction",
+   "note": "numbered list of alternative diagnoses, first is 'aged >=60 as per NCCN'."
+  },
+  {
+   "nct_id": "NCT06122896",
+   "structured": 18.0,
+   "prose": 30,
+   "label": "cohort_disjunction",
+   "note": "'Individuals with STK11 variants, and age >=30' then a second bullet for other variants."
+  },
+  {
+   "nct_id": "NCT07275216",
+   "structured": 18.0,
+   "prose": 75,
+   "label": "cohort_disjunction",
+   "note": "sub-list of a specific unfit population."
+  },
+  {
+   "nct_id": "NCT06576193",
+   "structured": 14.0,
+   "prose": 18,
+   "label": "about_another_person",
+   "note": "'Study Facilitators (process evaluation participants): Aged 18 years or older'."
+  },
+  {
+   "nct_id": "NCT07159308",
+   "structured": 16.0,
+   "prose": 18,
+   "label": "about_another_person",
+   "note": "'Inclusion Criteria for Important Person: Age 18 years or older'."
+  },
+  {
+   "nct_id": "NCT06507072",
+   "structured": 6.0,
+   "prose": 18,
+   "label": "about_another_person",
+   "note": "'Parents 18 years and older'."
+  },
+  {
+   "nct_id": "NCT07340554",
+   "structured": 14.0,
+   "prose": 18,
+   "label": "about_another_person",
+   "note": "'14-17 year old youth; Guardian 18 years or older'."
+  },
+  {
+   "nct_id": "NCT07463443",
+   "structured": 18.0,
+   "prose": 65,
+   "label": "about_another_person",
+   "note": "patients aged 65+, caregivers aged 18+; minimumAge tracks the caregivers."
+  },
+  {
+   "nct_id": "NCT02982902",
+   "structured": 0.25,
+   "prose": 18,
+   "label": "about_another_person",
+   "note": "'Age >= 18 years' inside the donor selection criteria."
+  },
+  {
+   "nct_id": "NCT06722378",
+   "structured": 18.0,
+   "prose": 12,
+   "label": "about_another_person",
+   "note": "'Parents of children 12 years of age and older', in exclusions."
+  },
+  {
+   "nct_id": "NCT06318416",
+   "structured": 3.0,
+   "prose": 7,
+   "label": "sub_condition",
+   "note": "'for children 7 years or older, provide assent'."
+  },
+  {
+   "nct_id": "NCT07580586",
+   "structured": 18.0,
+   "prose": 50,
+   "label": "sub_condition",
+   "note": "'Female participants 50 years of age or older, in menopause for 24 consecutive months'."
+  },
+  {
+   "nct_id": "NCT04700826",
+   "structured": 55.0,
+   "prose": 65,
+   "label": "sub_condition",
+   "note": "CHA2DS2-VASc risk factor list: 'Heart failure; Hypertension; Age 65 years or older; Diabetes'."
+  },
+  {
+   "nct_id": "NCT06904235",
+   "structured": 0.0,
+   "prose": 10,
+   "label": "sub_condition",
+   "note": "'For patients aged >=10 years: ECOG' — selects which performance scale."
+  },
+  {
+   "nct_id": "NCT03101995",
+   "structured": 18.0,
+   "prose": 60,
+   "label": "sub_condition",
+   "note": "post-menopausal definition, 'at least one of the following parameters'."
+  },
+  {
+   "nct_id": "NCT07498478",
+   "structured": 18.0,
+   "prose": 60,
+   "label": "sub_condition",
+   "note": "post-menopausal definition."
+  },
+  {
+   "nct_id": "NCT07237256",
+   "structured": 18.0,
+   "prose": 60,
+   "label": "sub_condition",
+   "note": "post-menopausal definition."
+  },
+  {
+   "nct_id": "NCT06576076",
+   "structured": 12.0,
+   "prose": 18,
+   "label": "sub_condition",
+   "note": "'assent (or consent if 18 years or older)'."
+  },
+  {
+   "nct_id": "NCT07247188",
+   "structured": 2.0,
+   "prose": 6,
+   "label": "sub_condition",
+   "note": "'For children and adolescents aged >= 6 years: receipt of PPSV23 < 5 years before study'."
+  },
+  {
+   "nct_id": "NCT06306014",
+   "structured": 18.0,
+   "prose": 70,
+   "label": "sub_condition",
+   "note": "'at least one of the following risk factors: Age >=70'."
+  },
+  {
+   "nct_id": "NCT06540963",
+   "structured": 1.0,
+   "prose": 6,
+   "label": "sub_condition",
+   "note": "'Safety Run-In (first 6 participants) must be age 6 years or older'."
+  },
+  {
+   "nct_id": "NCT03630991",
+   "structured": 1.0,
+   "prose": 18,
+   "label": "sub_condition",
+   "note": "'Age >=18 years at the time of signing the informed consent'; minors enrol with assent."
+  },
+  {
+   "nct_id": "NCT04451915",
+   "structured": 18.0,
+   "prose": 35,
+   "label": "sub_condition",
+   "note": "'at least one risk factor (age >=35 and/or BMI >= 25)'."
+  },
+  {
+   "nct_id": "NCT06974461",
+   "structured": 50.0,
+   "prose": 65,
+   "label": "sub_condition",
+   "note": "sarcopenia definition: handgrip cutoffs for 'women aged >=65' vs 'aged 50-64'."
+  },
+  {
+   "nct_id": "NCT06636552",
+   "structured": 18.0,
+   "prose": 65,
+   "label": "sub_condition",
+   "note": "'screening TTE is required only for subjects aged >= 65 years'."
+  },
+  {
+   "nct_id": "NCT03910738",
+   "structured": 18.0,
+   "prose": 50,
+   "label": "sub_condition",
+   "note": "PSA threshold by age band."
+  },
+  {
+   "nct_id": "NCT05667506",
+   "structured": 3.0,
+   "prose": 16,
+   "label": "sub_condition",
+   "note": "'Karnofsky (age >= 16 years) ... or Lansky (age < 16 years)'."
+  },
+  {
+   "nct_id": "NCT06873633",
+   "structured": 0.0,
+   "prose": 1,
+   "label": "sub_condition",
+   "note": "'eGFR using the Schwartz formula if aged >=1 year; or if aged <1 year'."
+  },
+  {
+   "nct_id": "NCT05717699",
+   "structured": 1.0,
+   "prose": 16,
+   "label": "sub_condition",
+   "note": "'LPS (patients aged >=1 and <16) and KPS (patients aged >=16)'."
+  },
+  {
+   "nct_id": "NCT03937661",
+   "structured": 35.0,
+   "prose": 40,
+   "label": "sub_condition",
+   "note": "Bologna Criteria, 'fulfilling 2 out of 3 of the following: Age >= 40'."
+  },
+  {
+   "nct_id": "NCT04232085",
+   "structured": 0.3333333333333333,
+   "prose": 5,
+   "label": "sub_condition",
+   "note": "'Age >=5 years' sits in a block that continues into donor selection criteria."
+  },
+  {
+   "nct_id": "NCT05276557",
+   "structured": 3.0,
+   "prose": 12,
+   "label": "exclusion",
+   "note": "'Children 12 years and older - to be excluded after a written note'."
+  },
+  {
+   "nct_id": "NCT05334862",
+   "structured": 2.5,
+   "prose": 5,
+   "label": "exclusion",
+   "note": "age bounds appear inside the numbered exclusion list."
+  },
+  {
+   "nct_id": "NCT07103395",
+   "structured": 18.0,
+   "prose": 75,
+   "label": "range_tail",
+   "note": "'aged 18 to 75 years or older' — the pattern matched the top of the range."
+  }
+ ]
+}

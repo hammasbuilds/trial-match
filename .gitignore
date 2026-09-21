@@ -1,0 +1,10 @@
+# The corpus is 30 MB and rebuildable: scripts/fetch_trials.py --pages 40.
+# The hand labels are NOT rebuildable and are tracked below.
+data/trials.json
+
+# Everything else
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
