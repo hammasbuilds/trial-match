@@ -30,7 +30,7 @@ python scripts/measure.py                    # every table below
 python -m pytest                             # 28 tests
 ```
 
-## The number that is wrong
+## Results
 
 Parse an age floor out of the eligibility prose, compare it against the structured
 `minimumAge`, and **128 of 2,634 trials disagree — 4.9%**.
