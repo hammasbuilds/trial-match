@@ -17,13 +17,26 @@ language model is involved.
 from __future__ import annotations
 
 import json
+import os
 import re
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-DATA = Path(__file__).resolve().parents[2] / "data"
-TRIALS = DATA / "trials.json"
+#: Set this to a directory holding ``trials.json`` to read the corpus from
+#: somewhere other than the repository's own ``data/``.
+DATA_ENV = "TRIALMATCH_DATA"
+REPO_DATA = Path(__file__).resolve().parents[2] / "data"
+
+
+def data_dir() -> Path:
+    """Where ``trials.json`` lives: ``$TRIALMATCH_DATA`` if set, else ``<repo>/data``."""
+    override = os.environ.get(DATA_ENV, "").strip()
+    return Path(override) if override else REPO_DATA
+
+
+def trials_path() -> Path:
+    return data_dir() / "trials.json"
 
 # "18 Years", "6 Months", "90 Days" — the registry's own age format.
 _AGE = re.compile(r"(\d+)\s*(year|month|week|day)", re.I)
@@ -110,15 +123,32 @@ def _years(raw: str) -> float | None:
     return int(found.group(1)) * _PER_YEAR[found.group(2).lower()]
 
 
-@lru_cache(maxsize=1)
-def load(path: str | None = None) -> tuple[Trial, ...]:
-    target = Path(path) if path else TRIALS
-    if not target.exists():
+def available(path: str | Path | None = None) -> bool:
+    """True when the corpus file exists, so callers can skip instead of crash."""
+    return (Path(path) if path else trials_path()).is_file()
+
+
+def load(path: str | Path | None = None) -> tuple[Trial, ...]:
+    """Load the corpus from ``path``, or from :func:`trials_path` when omitted."""
+    return _load(str(Path(path) if path else trials_path()))
+
+
+@lru_cache(maxsize=4)
+def _load(target_str: str) -> tuple[Trial, ...]:
+    target = Path(target_str)
+    if not target.is_file():
         raise TrialsMissingError(
-            f"{target} is missing. Run scripts/fetch_trials.py — the API is "
-            "public and needs no key."
+            f"{target} is missing. Run `python scripts/fetch_trials.py` (the API is "
+            f"public and needs no key), or set {DATA_ENV} to a directory holding "
+            "trials.json."
         )
-    raw = json.loads(target.read_text(encoding="utf-8"))
+    try:
+        raw = json.loads(target.read_text(encoding="utf-8"))
+        rows = raw["trials"]
+    except (json.JSONDecodeError, KeyError, TypeError) as exc:
+        raise ValueError(
+            f"{target} is not a trial-match corpus ({exc!s}). Re-run scripts/fetch_trials.py."
+        ) from exc
     return tuple(
         Trial(
             nct_id=t["nct_id"],
@@ -133,5 +163,34 @@ def load(path: str | None = None) -> tuple[Trial, ...]:
             sex=t.get("sex", ""),
             healthy_volunteers=t.get("healthy_volunteers"),
         )
-        for t in raw["trials"]
+        for t in rows
     )
+
+
+def structurally_eligible(
+    trials: tuple[Trial, ...] | list[Trial], age_years: float, sex: str = ALL
+) -> list[Trial]:
+    """Trials whose *structured* age range and sex field admit this person.
+
+    This is the matching the README recommends: typed fields only, no prose.
+    A blank structured bound is treated as open. ``sex`` is ``"FEMALE"``,
+    ``"MALE"`` or ``"ALL"`` (match regardless of sex restriction).
+    """
+    if isinstance(age_years, bool) or not isinstance(age_years, (int, float)):
+        raise TypeError(f"age_years must be a number, got {type(age_years).__name__}")
+    if not 0 <= age_years < 130:
+        raise ValueError(f"age_years must be between 0 and 130, got {age_years}")
+    sex = (sex or ALL).upper()
+    if sex not in (ALL, FEMALE, MALE):
+        raise ValueError(f"sex must be FEMALE, MALE or ALL, got {sex!r}")
+    out = []
+    for t in trials:
+        low, high = t.structured_min_years, t.structured_max_years
+        if low is not None and age_years < low:
+            continue
+        if high is not None and age_years > high:
+            continue
+        if sex != ALL and t.sex not in ("", ALL, sex):
+            continue
+        out.append(t)
+    return out

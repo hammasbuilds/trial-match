@@ -11,26 +11,24 @@ import pytest
 
 from trialmatch import corpus
 
-TRIALS = corpus.load()
+
+def test_corpus_size(trials):
+    assert len(trials) == 12_500
 
 
-def test_corpus_size():
-    assert len(TRIALS) == 12_500
+def test_every_trial_has_an_id_and_criteria(trials):
+    assert all(t.nct_id.startswith("NCT") for t in trials)
+    assert all(t.criteria.strip() for t in trials)
 
 
-def test_every_trial_has_an_id_and_criteria():
-    assert all(t.nct_id.startswith("NCT") for t in TRIALS)
-    assert all(t.criteria.strip() for t in TRIALS)
+def test_ids_are_unique(trials):
+    assert len({t.nct_id for t in trials}) == len(trials)
 
 
-def test_ids_are_unique():
-    assert len({t.nct_id for t in TRIALS}) == len(TRIALS)
-
-
-def test_structured_age_is_present_on_almost_every_trial():
+def test_structured_age_is_present_on_almost_every_trial(trials):
     """97%. The README leans on this, so it is asserted."""
-    have = sum(1 for t in TRIALS if t.structured_min_years is not None)
-    assert have / len(TRIALS) > 0.95
+    have = sum(1 for t in trials if t.structured_min_years is not None)
+    assert have / len(trials) > 0.95
 
 
 @pytest.mark.parametrize(
@@ -106,12 +104,12 @@ def test_implausible_ages_are_rejected():
     assert trial.stated_min_years is None
 
 
-def test_prose_age_floor_is_found_on_a_minority():
+def test_prose_age_floor_is_found_on_a_minority(trials):
     """Only ~21% of trials state an age floor in prose at all.
 
     Worth pinning: if a future loosening of the pattern pushed this towards
     100%, it would be matching ages that are not floors, which is exactly the
     failure the repository documents.
     """
-    share = sum(1 for t in TRIALS if t.stated_min_years is not None) / len(TRIALS)
+    share = sum(1 for t in trials if t.stated_min_years is not None) / len(trials)
     assert 0.10 < share < 0.35

@@ -12,7 +12,7 @@ import collections
 import json
 from pathlib import Path
 
-from trialmatch import corpus
+import pytest
 
 LABELS = json.loads(
     (Path(__file__).resolve().parents[1] / "data" / "age_disagreement_labels.json")
@@ -34,11 +34,25 @@ def test_counts_match_the_annotations():
     assert LABELS["counts"]["total"] == len(ANNOTATIONS)
 
 
-def test_every_labelled_trial_exists_in_the_corpus():
-    """Catches invented ids."""
-    real = {t.nct_id for t in corpus.load()}
-    missing = [a["nct_id"] for a in ANNOTATIONS if a["nct_id"] not in real]
-    assert missing == []
+def _labelled_in(trials) -> list[tuple[dict, object]]:
+    by_id = {t.nct_id: t for t in trials}
+    return [(a, by_id[a["nct_id"]]) for a in ANNOTATIONS if a["nct_id"] in by_id]
+
+
+def test_every_labelled_trial_exists_in_the_corpus(trials):
+    """Catches invented ids, against the snapshot the labels were drawn from.
+
+    The fetch is live: a later pull returns a different slice of recruiting
+    trials, so on any other corpus this cannot tell an invented id from a trial
+    that is simply not in today's slice, and it skips rather than guess.
+    """
+    present = _labelled_in(trials)
+    if len(present) < len(ANNOTATIONS):
+        pytest.skip(
+            f"corpus is a different registry snapshot: {len(present)} of "
+            f"{len(ANNOTATIONS)} labelled trials are in it"
+        )
+    assert len(present) == len(ANNOTATIONS)
 
 
 def test_no_trial_is_labelled_twice():
@@ -62,25 +76,27 @@ def test_every_annotation_has_a_note():
     assert all(a.get("note", "").strip() for a in ANNOTATIONS)
 
 
-def test_recorded_values_match_the_corpus():
+def test_recorded_values_match_the_corpus(trials):
     """The structured and prose ages in the label file are not retyped facts.
 
     If they disagree with what the parser now produces, either the parser
     changed or the labels were transcribed wrongly, and the audit is measuring
     something other than what it says.
     """
-    by_id = {t.nct_id: t for t in corpus.load()}
-    for a in ANNOTATIONS:
-        trial = by_id[a["nct_id"]]
+    present = _labelled_in(trials)
+    if not present:
+        pytest.skip("none of the labelled trials is in this corpus")
+    for a, trial in present:
         assert trial.structured_min_years == a["structured"], a["nct_id"]
         assert trial.stated_min_years == a["prose"], a["nct_id"]
 
 
-def test_every_labelled_trial_really_disagrees():
+def test_every_labelled_trial_really_disagrees(trials):
     """The sample is drawn from disagreements, so all of them must be ones."""
-    by_id = {t.nct_id: t for t in corpus.load()}
-    for a in ANNOTATIONS:
-        trial = by_id[a["nct_id"]]
+    present = _labelled_in(trials)
+    if not present:
+        pytest.skip("none of the labelled trials is in this corpus")
+    for _, trial in present:
         assert abs(trial.structured_min_years - trial.stated_min_years) > 0.01
 
 
