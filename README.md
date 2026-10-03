@@ -25,10 +25,34 @@ That duplication is the asset. The same fact, recorded twice, by the same people
 can be checked with no model at all.
 
 ```
-python scripts/fetch_trials.py --pages 40    # rebuild the corpus
+pip install -e .[dev]
+python demo.py                               # runs on a fresh clone, no corpus needed
+python -m pytest                             # 45 tests; 8 need the corpus and skip without it
+python scripts/fetch_trials.py               # 50 pages x 250 = 12,500 trials, ~30 MB, resumable
 python scripts/measure.py                    # every table below
-python -m pytest                             # 28 tests
 ```
+
+The corpus lives in `data/trials.json` (gitignored), or in the directory named by
+`TRIALMATCH_DATA`. The fetch writes each finished page to `trials.json.part`, so an
+interrupted run resumes where it stopped (`--fresh` starts over), and `trials.json` only
+appears, by rename, once the last page is in.
+
+**The fetch is live.** It takes the first 12,500 recruiting interventional trials in the
+API's order on the day you run it, so a re-fetch is a different slice of the registry,
+not the same file. Every number below is from the 2026-09-21 pull the labels were drawn
+from. A re-fetch on 2026-10-03 gave:
+
+| | 2026-09-21 | 2026-10-03 |
+|---|---:|---:|
+| With a structured `minimumAge` | 12,116 | 12,111 |
+| With an age floor stated in the prose | 2,657 | 2,635 |
+| With both | 2,634 | 2,611 |
+| Disagreements | 128 (4.9%) | 149 (5.7%) |
+| Labelled trials still in the slice | 48 / 48 | 15 / 48 |
+
+The 15 labelled trials that are in both pulls parse to exactly the recorded values and still
+disagree; the test that checks *every* labelled id exists skips, with that reason, on any
+other slice.
 
 ## Results
 
@@ -98,7 +122,15 @@ which is the only reason either survived long enough to be worth writing down.
 
 **Match on the structured fields.** They are present on 97% of trials, they are typed, and
 nothing has to be parsed out of a sentence to use them. 13% of those trials are open to
-under-18s, which is the kind of question the structured fields answer cleanly.
+under-18s, which is the kind of question the structured fields answer cleanly:
+
+```python
+from trialmatch import corpus
+hits = corpus.structurally_eligible(corpus.load(), age_years=15, sex="FEMALE")
+```
+
+On the 2026-10-03 pull that admits a 15-year-old girl to 1,386 of 12,500 trials. It
+filters on `minimumAge`, `maximumAge` and `sex` only; a blank bound is treated as open.
 
 **Do not treat criteria prose as a source of typed constraints.** Not with patterns, and —
 this is the part that matters for a 14B — not with a model asked the same badly-posed
@@ -115,9 +147,10 @@ on.
 ## Layout
 
 ```
-scripts/fetch_trials.py               ClinicalTrials.gov v2, paged, no key
-src/trialmatch/corpus.py              12,500 trials; structured + prose age parsing
+scripts/fetch_trials.py               ClinicalTrials.gov v2, paged, no key, resumable
+src/trialmatch/corpus.py              loader ($TRIALMATCH_DATA), age parsing, structurally_eligible()
 scripts/measure.py                    every table above
 data/age_disagreement_labels.json     48 hand labels, each with its evidence
-tests/                                28 tests, incl. the label file vs the corpus
+tests/                                45 tests, incl. the label file vs the corpus
+demo.py                               parser on real sentences, the audit, structured matching
 ```

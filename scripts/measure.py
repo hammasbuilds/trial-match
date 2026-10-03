@@ -66,8 +66,11 @@ def the_audit(disagree, n_both: int) -> None:
     counts = collections.Counter(a["label"] for a in annotations)
     n = len(annotations)
 
-    print(f"hand-labelled sample of {n} disagreements "
-          f"({n / len(disagree):.0%} of all {len(disagree)}):\n")
+    here = {t.nct_id for t in disagree}
+    overlap = sum(1 for a in annotations if a["nct_id"] in here)
+    print(f"hand-labelled sample of {n} disagreements, drawn from the 2026-09-21 pull")
+    print(f"({overlap} of the {n} are among this corpus's {len(disagree)} disagreements;"
+          " the fetch is live, so a later pull is a different slice):\n")
     for label, count in counts.most_common():
         print(f"  {count:>3}  {count / n:>5.1%}  {label}")
 
@@ -120,7 +123,15 @@ def the_recoverable_part(trials) -> None:
     print("    of a sentence to use them.")
 
 
-def main() -> None:
+def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    if not corpus.available():
+        print(f"no corpus at {corpus.trials_path()}.\n"
+              "Run `python scripts/fetch_trials.py` first "
+              f"(or set {corpus.DATA_ENV} to a directory holding trials.json).",
+              file=sys.stderr)
+        return 2
     trials = corpus.load()
     the_corpus(trials)
     disagree, n_both = the_apparent_rate(trials)
@@ -128,7 +139,8 @@ def main() -> None:
     the_reasons()
     the_recoverable_part(trials)
     print()
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
