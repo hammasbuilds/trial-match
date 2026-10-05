@@ -154,3 +154,9 @@ data/age_disagreement_labels.json     48 hand labels, each with its evidence
 tests/                                45 tests, incl. the label file vs the corpus
 demo.py                               parser on real sentences, the audit, structured matching
 ```
+
+## Licence
+
+Code: MIT, see [LICENSE](LICENSE). `data/age_disagreement_labels.json` holds the author's
+hand labels, CC BY 4.0. The trial records come from ClinicalTrials.gov at fetch time and
+are not committed; see its [terms of use](https://clinicaltrials.gov/about-site/terms-conditions).
