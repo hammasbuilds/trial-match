@@ -37,8 +37,16 @@ def test_structured_age_is_present_on_almost_every_trial(trials):
 )
 def test_structured_age_units(raw, years):
     trial = corpus.Trial(
-        nct_id="NCT0", title="", status="", phases=(), enrollment=None,
-        conditions=(), criteria="", min_age=raw, max_age="", sex=corpus.ALL,
+        nct_id="NCT0",
+        title="",
+        status="",
+        phases=(),
+        enrollment=None,
+        conditions=(),
+        criteria="",
+        min_age=raw,
+        max_age="",
+        sex=corpus.ALL,
         healthy_volunteers=None,
     )
     got = trial.structured_min_years
@@ -53,9 +61,17 @@ def test_stage_is_not_read_as_age():
     a structured minimum of 18.
     """
     trial = corpus.Trial(
-        nct_id="NCT0", title="", status="", phases=(), enrollment=None,
-        conditions=(), criteria="Lymphedema stage >= 2 at screening",
-        min_age="18 Years", max_age="", sex=corpus.ALL, healthy_volunteers=None,
+        nct_id="NCT0",
+        title="",
+        status="",
+        phases=(),
+        enrollment=None,
+        conditions=(),
+        criteria="Lymphedema stage >= 2 at screening",
+        min_age="18 Years",
+        max_age="",
+        sex=corpus.ALL,
+        healthy_volunteers=None,
     )
     assert trial.stated_min_years is None
 
@@ -70,9 +86,17 @@ def test_stage_is_not_read_as_age():
 )
 def test_words_containing_age_are_not_age_floors(text):
     trial = corpus.Trial(
-        nct_id="NCT0", title="", status="", phases=(), enrollment=None,
-        conditions=(), criteria=text, min_age="18 Years", max_age="",
-        sex=corpus.ALL, healthy_volunteers=None,
+        nct_id="NCT0",
+        title="",
+        status="",
+        phases=(),
+        enrollment=None,
+        conditions=(),
+        criteria=text,
+        min_age="18 Years",
+        max_age="",
+        sex=corpus.ALL,
+        healthy_volunteers=None,
     )
     assert trial.stated_min_years is None
 
@@ -88,18 +112,34 @@ def test_words_containing_age_are_not_age_floors(text):
 )
 def test_plain_age_floors_are_read(text, expected):
     trial = corpus.Trial(
-        nct_id="NCT0", title="", status="", phases=(), enrollment=None,
-        conditions=(), criteria=text, min_age="18 Years", max_age="",
-        sex=corpus.ALL, healthy_volunteers=None,
+        nct_id="NCT0",
+        title="",
+        status="",
+        phases=(),
+        enrollment=None,
+        conditions=(),
+        criteria=text,
+        min_age="18 Years",
+        max_age="",
+        sex=corpus.ALL,
+        healthy_volunteers=None,
     )
     assert trial.stated_min_years == expected
 
 
 def test_implausible_ages_are_rejected():
     trial = corpus.Trial(
-        nct_id="NCT0", title="", status="", phases=(), enrollment=None,
-        conditions=(), criteria="aged >= 900 years", min_age="", max_age="",
-        sex=corpus.ALL, healthy_volunteers=None,
+        nct_id="NCT0",
+        title="",
+        status="",
+        phases=(),
+        enrollment=None,
+        conditions=(),
+        criteria="aged >= 900 years",
+        min_age="",
+        max_age="",
+        sex=corpus.ALL,
+        healthy_volunteers=None,
     )
     assert trial.stated_min_years is None
 

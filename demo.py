@@ -25,8 +25,11 @@ LABELS = Path(__file__).resolve().parent / "data" / "age_disagreement_labels.jso
 # Sentences quoted in the README, each from the trial named, with the structured
 # minimumAge that trial registered.
 EXAMPLES = [
-    ("NCT05667506", "Karnofsky (age >= 16 years) or Lansky (age < 16 years) performance status",
-     "3 Years"),
+    (
+        "NCT05667506",
+        "Karnofsky (age >= 16 years) or Lansky (age < 16 years) performance status",
+        "3 Years",
+    ),
     ("NCT06507072", "Parents 18 years and older", "6 Years"),
     ("NCT07103395", "aged 18 to 75 years or older", "18 Years"),
     ("synthetic", "Lymphedema stage >= 2 at screening", "18 Years"),
@@ -36,8 +39,17 @@ EXAMPLES = [
 
 def _trial(nct: str, text: str, min_age: str) -> corpus.Trial:
     return corpus.Trial(
-        nct_id=nct, title="", status="", phases=(), enrollment=None, conditions=(),
-        criteria=text, min_age=min_age, max_age="", sex=corpus.ALL, healthy_volunteers=None,
+        nct_id=nct,
+        title="",
+        status="",
+        phases=(),
+        enrollment=None,
+        conditions=(),
+        criteria=text,
+        min_age=min_age,
+        max_age="",
+        sex=corpus.ALL,
+        healthy_volunteers=None,
     )
 
 

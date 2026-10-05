@@ -28,11 +28,16 @@ fetch = _script("fetch_trials")
 
 
 def _study(nct: str, criteria: str = "Age >= 18 years") -> dict:
-    return {"protocolSection": {
-        "identificationModule": {"nctId": nct, "briefTitle": nct},
-        "eligibilityModule": {"eligibilityCriteria": criteria, "minimumAge": "18 Years",
-                              "sex": "ALL"},
-    }}
+    return {
+        "protocolSection": {
+            "identificationModule": {"nctId": nct, "briefTitle": nct},
+            "eligibilityModule": {
+                "eligibilityCriteria": criteria,
+                "minimumAge": "18 Years",
+                "sex": "ALL",
+            },
+        }
+    }
 
 
 def _write_corpus(directory: Path, rows: list[dict]) -> None:
@@ -41,11 +46,19 @@ def _write_corpus(directory: Path, rows: list[dict]) -> None:
 
 
 def _row(nct: str, min_age: str = "18 Years", max_age: str = "", sex: str = "ALL") -> dict:
-    return {"nct_id": nct, "title": nct, "status": "RECRUITING", "criteria": "x",
-            "min_age": min_age, "max_age": max_age, "sex": sex}
+    return {
+        "nct_id": nct,
+        "title": nct,
+        "status": "RECRUITING",
+        "criteria": "x",
+        "min_age": min_age,
+        "max_age": max_age,
+        "sex": sex,
+    }
 
 
 # --- data directory override -------------------------------------------------
+
 
 def test_env_var_overrides_data_dir(tmp_path, monkeypatch):
     monkeypatch.setenv(corpus.DATA_ENV, str(tmp_path))
@@ -71,13 +84,17 @@ def test_malformed_corpus_is_a_clear_error(tmp_path):
 
 # --- structured matching ------------------------------------------------------
 
+
 def test_structurally_eligible_uses_both_bounds_and_sex(tmp_path):
-    _write_corpus(tmp_path, [
-        _row("NCT_ADULT", "18 Years"),
-        _row("NCT_PAED", "6 Months", "17 Years"),
-        _row("NCT_WOMEN", "18 Years", sex="FEMALE"),
-        _row("NCT_OPEN", ""),
-    ])
+    _write_corpus(
+        tmp_path,
+        [
+            _row("NCT_ADULT", "18 Years"),
+            _row("NCT_PAED", "6 Months", "17 Years"),
+            _row("NCT_WOMEN", "18 Years", sex="FEMALE"),
+            _row("NCT_OPEN", ""),
+        ],
+    )
     trials = corpus.load(tmp_path / "trials.json")
     ids = lambda age, sex="ALL": {t.nct_id for t in corpus.structurally_eligible(trials, age, sex)}  # noqa: E731
     assert ids(10) == {"NCT_PAED", "NCT_OPEN"}
@@ -85,16 +102,24 @@ def test_structurally_eligible_uses_both_bounds_and_sex(tmp_path):
     assert ids(40, "FEMALE") == {"NCT_ADULT", "NCT_WOMEN", "NCT_OPEN"}
 
 
-@pytest.mark.parametrize("age,sex,exc", [
-    ("40", "ALL", TypeError), (None, "ALL", TypeError), (True, "ALL", TypeError),
-    (-1, "ALL", ValueError), (200, "ALL", ValueError), (40, "other", ValueError),
-])
+@pytest.mark.parametrize(
+    "age,sex,exc",
+    [
+        ("40", "ALL", TypeError),
+        (None, "ALL", TypeError),
+        (True, "ALL", TypeError),
+        (-1, "ALL", ValueError),
+        (200, "ALL", ValueError),
+        (40, "other", ValueError),
+    ],
+)
 def test_structurally_eligible_rejects_bad_input(age, sex, exc):
     with pytest.raises(exc):
         corpus.structurally_eligible([], age, sex)
 
 
 # --- fetch: resumable and atomic ---------------------------------------------
+
 
 def _fake_api(pages: list[list[dict]], fail_at: int | None = None):
     calls = []
@@ -131,8 +156,9 @@ def test_fetch_resumes_after_an_interruption(tmp_path, monkeypatch):
 
 def test_fetch_drops_a_torn_last_line(tmp_path):
     part = tmp_path / "trials.json.part"
-    part.write_text(json.dumps({"next": "1", "trials": [{"nct_id": "NCT1"}]}) + "\n{\"next\": ",
-                    encoding="utf-8")
+    part.write_text(
+        json.dumps({"next": "1", "trials": [{"nct_id": "NCT1"}]}) + '\n{"next": ', encoding="utf-8"
+    )
     trials, token, done = fetch.read_partial(part)
     assert (len(trials), token, done) == (1, "1", 1)
 
@@ -148,10 +174,18 @@ def test_default_fetch_can_reach_the_documented_corpus_size():
 
 # --- documented commands on a fresh clone ------------------------------------
 
+
 def _run(script: str, tmp_path: Path) -> subprocess.CompletedProcess:
     env = dict(os.environ, **{corpus.DATA_ENV: str(tmp_path), "PYTHONIOENCODING": "cp1252"})
-    return subprocess.run([sys.executable, str(ROOT / script)], capture_output=True,
-                          text=True, encoding="utf-8", errors="replace", env=env, timeout=120)
+    return subprocess.run(
+        [sys.executable, str(ROOT / script)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+        timeout=120,
+    )
 
 
 def test_demo_runs_without_the_corpus(tmp_path):

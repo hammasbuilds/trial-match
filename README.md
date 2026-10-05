@@ -126,6 +126,7 @@ under-18s, which is the kind of question the structured fields answer cleanly:
 
 ```python
 from trialmatch import corpus
+
 hits = corpus.structurally_eligible(corpus.load(), age_years=15, sex="FEMALE")
 ```
 

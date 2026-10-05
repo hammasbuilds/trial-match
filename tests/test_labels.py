@@ -15,8 +15,9 @@ from pathlib import Path
 import pytest
 
 LABELS = json.loads(
-    (Path(__file__).resolve().parents[1] / "data" / "age_disagreement_labels.json")
-    .read_text(encoding="utf-8")
+    (Path(__file__).resolve().parents[1] / "data" / "age_disagreement_labels.json").read_text(
+        encoding="utf-8"
+    )
 )
 ANNOTATIONS = LABELS["annotations"]
 

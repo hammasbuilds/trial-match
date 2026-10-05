@@ -34,7 +34,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from trialmatch.corpus import DATA_ENV, data_dir  # noqa: E402
 
 API = "https://clinicaltrials.gov/api/v2/studies"
-DEFAULT_PAGES = 50   # x DEFAULT_SIZE = the 12,500 trials the README describes
+DEFAULT_PAGES = 50  # x DEFAULT_SIZE = the 12,500 trials the README describes
 DEFAULT_SIZE = 250
 FIELDS = [
     "NCTId",
@@ -124,7 +124,7 @@ def fetch_page(token: str | None, size: int, retries: int = 4) -> dict:
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
             if attempt == retries:
                 raise
-            wait = 2 ** attempt * 2
+            wait = 2**attempt * 2
             print(f"  network error ({exc}); retrying in {wait}s", flush=True)
             time.sleep(wait)
     raise AssertionError("unreachable")
@@ -137,7 +137,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pages", type=int, default=DEFAULT_PAGES, help="pages to fetch")
     parser.add_argument("--size", type=int, default=DEFAULT_SIZE, help="per page, max 1000")
     parser.add_argument(
-        "--out", type=Path, default=None,
+        "--out",
+        type=Path,
+        default=None,
         help=f"directory for trials.json (default: ${DATA_ENV} or <repo>/data)",
     )
     parser.add_argument("--fresh", action="store_true", help="ignore a partial download")
@@ -162,8 +164,11 @@ def main(argv: list[str] | None = None) -> int:
             try:
                 payload = fetch_page(token, args.size)
             except (urllib.error.URLError, TimeoutError, OSError) as exc:
-                print(f"\nfetch stopped at page {n + 1}: {exc}\n"
-                      f"re-run the same command to resume from {part}", file=sys.stderr)
+                print(
+                    f"\nfetch stopped at page {n + 1}: {exc}\n"
+                    f"re-run the same command to resume from {part}",
+                    file=sys.stderr,
+                )
                 return 1
             batch = [t for t in (flatten(s) for s in payload.get("studies", [])) if t]
             token = payload.get("nextPageToken")
@@ -173,7 +178,7 @@ def main(argv: list[str] | None = None) -> int:
             n += 1
             print(f"  page {n:>3}: {len(trials):,} trials with criteria", flush=True)
             if token and n < args.pages:
-                time.sleep(0.4)   # the API asks for restraint; this is well inside it
+                time.sleep(0.4)  # the API asks for restraint; this is well inside it
 
     tmp = out_dir / "trials.json.tmp"
     tmp.write_text(json.dumps({"trials": trials}, indent=0), encoding="utf-8")

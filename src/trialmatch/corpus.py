@@ -38,6 +38,7 @@ def data_dir() -> Path:
 def trials_path() -> Path:
     return data_dir() / "trials.json"
 
+
 # "18 Years", "6 Months", "90 Days" — the registry's own age format.
 _AGE = re.compile(r"(\d+)\s*(year|month|week|day)", re.I)
 _PER_YEAR = {"year": 1.0, "month": 1 / 12, "week": 1 / 52, "day": 1 / 365}
